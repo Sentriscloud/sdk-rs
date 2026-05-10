@@ -32,6 +32,9 @@ pub mod native;
 #[cfg(feature = "wallet")]
 pub mod wallet;
 
+#[cfg(feature = "evm")]
+pub mod evm;
+
 // Re-export the most-used types at the crate root for ergonomic use.
 pub use network::{get_spec, sentrix_mainnet, sentrix_testnet, Network, SentrixChainSpec};
 

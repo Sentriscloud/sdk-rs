@@ -21,7 +21,7 @@ native = ["dep:reqwest", "dep:tokio", "dep:serde", "dep:serde_json", "dep:thiser
 wallet = ["dep:secp256k1", "dep:sha2", "dep:tiny-keccak", "dep:hex", "dep:serde", "dep:serde_json", "dep:thiserror", "native"]
 # evm and grpc are scaffolded behind features but not implemented yet —
 # alpha.0 ships the network spec + native client foundation.
-evm = []
+evm = ["dep:alloy", "dep:url", "network"]
 grpc = []
 
 [dependencies]
@@ -38,6 +38,10 @@ secp256k1 = { version = "0.30", optional = true, features = ["recovery", "global
 sha2 = { version = "0.10", optional = true }
 tiny-keccak = { version = "2", optional = true, features = ["keccak"] }
 hex = { version = "0.4", optional = true }
+
+# EVM (alloy)
+alloy = { version = "0.8", optional = true, features = ["providers", "rpc-types-eth", "transport-http", "reqwest-rustls-tls"] }
+url = { version = "2", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

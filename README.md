@@ -15,7 +15,7 @@ Mirror of [`@sentrix/chain`](https://github.com/Sentriscloud/sdk-ts) on the Type
 | `network` | _always on_ | ✅ stable | Chain spec types + `MAINNET_SPEC` / `TESTNET_SPEC` constants. Single source of truth for chain ID, RPC / REST / WS / gRPC URLs, explorer, faucet. |
 | `native` | `native` (default) | ✅ alpha | Typed REST client over `reqwest` for `/chain/info`, `/staking/validators`, `/accounts/<addr>/nonce`, `POST /transactions`. |
 | `wallet` | `wallet` | ✅ alpha | secp256k1 keypair + Ethereum-style address derivation + native tx signing. |
-| `evm` | `evm` | 🟡 planned | alloy-based EVM client. |
+| `evm` | `evm` | ✅ alpha | alloy-based EVM JSON-RPC client (Provider factory; reach for alloy directly for signing / contract bindings / event filters). |
 | `grpc` | `grpc` | 🟡 planned | tonic client over `sentrix.v1.Sentrix`. |
 
 Trim what you actually use:
@@ -72,6 +72,23 @@ async fn main() -> anyhow::Result<()> {
 }
 ```
 
+### EVM read via alloy
+
+```rust
+use sentrix_chain::{Network, evm};
+use alloy::providers::Provider;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let p = evm::http_provider(Network::Mainnet)?;
+    let block = p.get_block_number().await?;
+    println!("tip: {block}");
+    Ok(())
+}
+```
+
+Reach for `alloy` directly for tx signing, contract bindings, event filters — `http_provider()` returns alloy's standard `RootProvider` so the rest of the alloy ecosystem works unchanged.
+
 ### Network spec — const-accessible
 
 ```rust
@@ -91,7 +108,7 @@ println!("{}: {}", MAINNET.name, MAINNET.rpc_url);
 - [x] `network` — chain spec, mainnet + testnet constants
 - [x] `native` — REST read + tx broadcast
 - [x] `wallet` — secp256k1 keypair + tx signing
-- [ ] `evm` — alloy-based public client + viem-shape API parity
+- [x] `evm` — alloy-based provider (read; write via alloy direct)
 - [ ] `grpc` — tonic client over `sentrix.v1.Sentrix` (`getBlock`, `getBalance`, `getValidatorSet`, `getSupply`, `getMempool`, `streamEvents`)
 - [ ] `bft` — WebSocket subscription manager (port the keepalive + multiplex pattern from `@sentrix/chain/bft`)
 - [ ] Published to crates.io once feature surface stabilises
