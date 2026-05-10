@@ -18,6 +18,11 @@
 
 #![deny(unsafe_code)]
 #![warn(missing_docs)]
+// Doc comments intentionally use multi-line continuations without
+// extra indentation — the prose reads cleaner that way and rustfmt
+// preserves it. Clippy's lazy-continuation rule wants every wrap
+// double-indented; we'd rather not.
+#![allow(clippy::doc_lazy_continuation)]
 
 pub mod network;
 
