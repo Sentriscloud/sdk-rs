@@ -16,7 +16,7 @@ Mirror of [`@sentrix/chain`](https://github.com/Sentriscloud/sdk-ts) on the Type
 | `native` | `native` (default) | ✅ alpha | Typed REST client over `reqwest` for `/chain/info`, `/staking/validators`, `/accounts/<addr>/nonce`, `POST /transactions`. |
 | `wallet` | `wallet` | ✅ alpha | secp256k1 keypair + Ethereum-style address derivation + native tx signing. |
 | `evm` | `evm` | ✅ alpha | alloy-based EVM JSON-RPC client (Provider factory; reach for alloy directly for signing / contract bindings / event filters). |
-| `grpc` | `grpc` | 🟡 planned | tonic client over `sentrix.v1.Sentrix`. |
+| `grpc` | `grpc` | ✅ alpha | tonic client over `sentrix.v1.Sentrix` — getBlock / getBalance / getValidatorSet / getSupply / getMempool / streamEvents. Pre-generated proto types committed; no `protoc` needed by consumers. |
 
 Trim what you actually use:
 
@@ -89,6 +89,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 Reach for `alloy` directly for tx signing, contract bindings, event filters — `http_provider()` returns alloy's standard `RootProvider` so the rest of the alloy ecosystem works unchanged.
 
+### gRPC read
+
+```rust
+use sentrix_chain::{Network, grpc::SentrixGrpcClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut c = SentrixGrpcClient::connect(Network::Mainnet).await?;
+    let block = c.get_latest_block().await?;
+    println!("tip: {} ({} txs)", block.index, block.transactions.len());
+
+    // Server-stream chain events
+    let mut stream = c.subscribe_events(vec![]).await?;
+    while let Some(ev) = stream.message().await? {
+        println!("event: {ev:?}");
+    }
+    Ok(())
+}
+```
+
+`connect()` resolves the public TLS endpoint (`grpc.sentrixchain.com:443`) and attaches system-roots automatically. For dev sidecars use `connect_url("http://localhost:50051")`.
+
 ### Network spec — const-accessible
 
 ```rust
@@ -109,7 +131,7 @@ println!("{}: {}", MAINNET.name, MAINNET.rpc_url);
 - [x] `native` — REST read + tx broadcast
 - [x] `wallet` — secp256k1 keypair + tx signing
 - [x] `evm` — alloy-based provider (read; write via alloy direct)
-- [ ] `grpc` — tonic client over `sentrix.v1.Sentrix` (`getBlock`, `getBalance`, `getValidatorSet`, `getSupply`, `getMempool`, `streamEvents`)
+- [x] `grpc` — tonic client over `sentrix.v1.Sentrix` (`getBlock`, `getBalance`, `getValidatorSet`, `getSupply`, `getMempool`, `streamEvents`)
 - [ ] `bft` — WebSocket subscription manager (port the keepalive + multiplex pattern from `@sentrix/chain/bft`)
 - [ ] Published to crates.io once feature surface stabilises
 

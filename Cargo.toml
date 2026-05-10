@@ -22,7 +22,7 @@ wallet = ["dep:secp256k1", "dep:sha2", "dep:tiny-keccak", "dep:hex", "dep:serde"
 # evm and grpc are scaffolded behind features but not implemented yet —
 # alpha.0 ships the network spec + native client foundation.
 evm = ["dep:alloy", "dep:url", "network"]
-grpc = []
+grpc = ["dep:tonic", "dep:prost", "dep:tokio", "dep:futures", "dep:hex", "dep:thiserror", "network"]
 
 [dependencies]
 # Network spec — always available, no feature gate.
@@ -42,6 +42,12 @@ hex = { version = "0.4", optional = true }
 # EVM (alloy)
 alloy = { version = "0.8", optional = true, features = ["providers", "rpc-types-eth", "transport-http", "reqwest-rustls-tls"] }
 url = { version = "2", optional = true }
+
+# gRPC (tonic)
+tonic = { version = "0.12", optional = true, features = ["tls", "tls-roots"] }
+prost = { version = "0.13", optional = true }
+futures = { version = "0.3", optional = true }
+
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
