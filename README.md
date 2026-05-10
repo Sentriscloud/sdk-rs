@@ -17,6 +17,7 @@ Mirror of [`@sentrix/chain`](https://github.com/Sentriscloud/sdk-ts) on the Type
 | `wallet` | `wallet` | ✅ alpha | secp256k1 keypair + Ethereum-style address derivation + native tx signing. |
 | `evm` | `evm` | ✅ alpha | alloy-based EVM JSON-RPC client (Provider factory; reach for alloy directly for signing / contract bindings / event filters). |
 | `grpc` | `grpc` | ✅ alpha | tonic client over `sentrix.v1.Sentrix` — getBlock / getBalance / getValidatorSet / getSupply / getMempool / streamEvents. Pre-generated proto types committed; no `protoc` needed by consumers. |
+| `bft` | `bft` | ✅ alpha | WebSocket subscription manager for the 9 channels (newHeads, logs, sentrix_finalized, sentrix_jail, …) over tokio-tungstenite. Multiplexes everything on one socket; pings every 30 s + force-reconnects on 90 s stale; auto re-subscribes after reconnect. Mirror of `@sentrix/chain/bft`. |
 
 Trim what you actually use:
 
@@ -111,6 +112,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 `connect()` resolves the public TLS endpoint (`grpc.sentrixchain.com:443`) and attaches system-roots automatically. For dev sidecars use `connect_url("http://localhost:50051")`.
 
+### Subscribe via WebSocket (BFT door)
+
+```rust
+use sentrix_chain::{Network, bft::{SubscriptionManager, Channel}};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mgr = SubscriptionManager::new(Network::Mainnet);
+
+    let mut heads = mgr.subscribe(Channel::NewHeads).await?;
+    let mut jail = mgr.subscribe(Channel::SentrixJail).await?;
+
+    tokio::select! {
+        Some(h) = heads.recv() => println!("new head: {h}"),
+        Some(j) = jail.recv() => println!("jail event: {j}"),
+    }
+    Ok(())
+}
+```
+
+Same socket carries both subscriptions; reconnects automatically with exponential backoff and re-subscribes everything. Pings every 30 s so middleboxes (Caddy `idle_timeout`, NAT, AWS ALB) don't drop quiet connections; if no frame arrives within 90 s the manager force-closes + reconnects (half-open guard).
+
 ### Network spec — const-accessible
 
 ```rust
@@ -132,7 +155,7 @@ println!("{}: {}", MAINNET.name, MAINNET.rpc_url);
 - [x] `wallet` — secp256k1 keypair + tx signing
 - [x] `evm` — alloy-based provider (read; write via alloy direct)
 - [x] `grpc` — tonic client over `sentrix.v1.Sentrix` (`getBlock`, `getBalance`, `getValidatorSet`, `getSupply`, `getMempool`, `streamEvents`)
-- [ ] `bft` — WebSocket subscription manager (port the keepalive + multiplex pattern from `@sentrix/chain/bft`)
+- [x] `bft` — WebSocket subscription manager (multiplex + keepalive ping + auto-reconnect, port of `@sentrix/chain/bft`)
 - [ ] Published to crates.io once feature surface stabilises
 
 ## Decimals

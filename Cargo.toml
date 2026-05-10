@@ -23,6 +23,7 @@ wallet = ["dep:secp256k1", "dep:sha2", "dep:tiny-keccak", "dep:hex", "dep:serde"
 # alpha.0 ships the network spec + native client foundation.
 evm = ["dep:alloy", "dep:url", "network"]
 grpc = ["dep:tonic", "dep:prost", "dep:tokio", "dep:futures", "dep:hex", "dep:thiserror", "network"]
+bft = ["dep:tokio", "dep:tokio-tungstenite", "dep:futures", "dep:serde", "dep:serde_json", "dep:thiserror", "network"]
 
 [dependencies]
 # Network spec — always available, no feature gate.
@@ -47,6 +48,7 @@ url = { version = "2", optional = true }
 tonic = { version = "0.12", optional = true, features = ["tls", "tls-roots"] }
 prost = { version = "0.13", optional = true }
 futures = { version = "0.3", optional = true }
+tokio-tungstenite = { version = "0.24", optional = true, features = ["rustls-tls-native-roots"] }
 
 
 [dev-dependencies]

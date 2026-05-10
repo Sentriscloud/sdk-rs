@@ -38,6 +38,9 @@ pub mod evm;
 #[cfg(feature = "grpc")]
 pub mod grpc;
 
+#[cfg(feature = "bft")]
+pub mod bft;
+
 // Re-export the most-used types at the crate root for ergonomic use.
 pub use network::{get_spec, sentrix_mainnet, sentrix_testnet, Network, SentrixChainSpec};
 
