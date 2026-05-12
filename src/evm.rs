@@ -12,7 +12,6 @@
 //! `RootProvider`.
 
 use alloy::providers::{ProviderBuilder, RootProvider};
-use alloy::transports::http::{Client, Http};
 use url::Url;
 
 use crate::network::{get_spec, Network};
@@ -39,18 +38,22 @@ pub enum EvmError {
 /// println!("tip: {block_number}");
 /// # Ok(()) }
 /// ```
-pub fn http_provider(network: Network) -> Result<RootProvider<Http<Client>>, EvmError> {
+pub fn http_provider(network: Network) -> Result<RootProvider, EvmError> {
     let spec = get_spec(network);
     let url: Url = spec.rpc_url.parse()?;
-    Ok(ProviderBuilder::new().on_http(url))
+    Ok(ProviderBuilder::new()
+        .disable_recommended_fillers()
+        .connect_http(url))
 }
 
 /// Same as [`http_provider`] but with a custom RPC URL — handy when
 /// pointing at an internal endpoint during dev or against a staging
 /// chain.
-pub fn http_provider_with_url(rpc_url: &str) -> Result<RootProvider<Http<Client>>, EvmError> {
+pub fn http_provider_with_url(rpc_url: &str) -> Result<RootProvider, EvmError> {
     let url: Url = rpc_url.parse()?;
-    Ok(ProviderBuilder::new().on_http(url))
+    Ok(ProviderBuilder::new()
+        .disable_recommended_fillers()
+        .connect_http(url))
 }
 
 #[cfg(test)]

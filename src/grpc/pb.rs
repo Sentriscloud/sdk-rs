@@ -345,10 +345,10 @@ pub mod sentrix_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     /// ────────────────────────────────────────────────────────────
     /// Service definition
     /// ────────────────────────────────────────────────────────────
@@ -395,9 +395,8 @@ pub mod sentrix_client {
                     <T as tonic::client::GrpcService<tonic::body::Body>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::Body>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::Body>>>::Error:
+                Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             SentrixClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -438,22 +437,13 @@ pub mod sentrix_client {
         pub async fn broadcast_tx(
             &mut self,
             request: impl tonic::IntoRequest<super::BroadcastTxRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::BroadcastTxResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<super::BroadcastTxResponse>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sentrix.v1.Sentrix/BroadcastTx",
-            );
+            let path = http::uri::PathAndQuery::from_static("/sentrix.v1.Sentrix/BroadcastTx");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("sentrix.v1.Sentrix", "BroadcastTx"));
@@ -465,18 +455,11 @@ pub mod sentrix_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetBlockRequest>,
         ) -> std::result::Result<tonic::Response<super::Block>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sentrix.v1.Sentrix/GetBlock",
-            );
+            let path = http::uri::PathAndQuery::from_static("/sentrix.v1.Sentrix/GetBlock");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("sentrix.v1.Sentrix", "GetBlock"));
@@ -490,18 +473,11 @@ pub mod sentrix_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetBalanceRequest>,
         ) -> std::result::Result<tonic::Response<super::Account>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sentrix.v1.Sentrix/GetBalance",
-            );
+            let path = http::uri::PathAndQuery::from_static("/sentrix.v1.Sentrix/GetBalance");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("sentrix.v1.Sentrix", "GetBalance"));
@@ -517,18 +493,11 @@ pub mod sentrix_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetValidatorSetRequest>,
         ) -> std::result::Result<tonic::Response<super::ValidatorSet>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sentrix.v1.Sentrix/GetValidatorSet",
-            );
+            let path = http::uri::PathAndQuery::from_static("/sentrix.v1.Sentrix/GetValidatorSet");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("sentrix.v1.Sentrix", "GetValidatorSet"));
@@ -539,18 +508,11 @@ pub mod sentrix_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetSupplyRequest>,
         ) -> std::result::Result<tonic::Response<super::Supply>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sentrix.v1.Sentrix/GetSupply",
-            );
+            let path = http::uri::PathAndQuery::from_static("/sentrix.v1.Sentrix/GetSupply");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("sentrix.v1.Sentrix", "GetSupply"));
@@ -561,18 +523,11 @@ pub mod sentrix_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetMempoolRequest>,
         ) -> std::result::Result<tonic::Response<super::Mempool>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sentrix.v1.Sentrix/GetMempool",
-            );
+            let path = http::uri::PathAndQuery::from_static("/sentrix.v1.Sentrix/GetMempool");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("sentrix.v1.Sentrix", "GetMempool"));
@@ -590,18 +545,11 @@ pub mod sentrix_client {
             tonic::Response<tonic::codec::Streaming<super::ChainEvent>>,
             tonic::Status,
         > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic_prost::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/sentrix.v1.Sentrix/StreamEvents",
-            );
+            let path = http::uri::PathAndQuery::from_static("/sentrix.v1.Sentrix/StreamEvents");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("sentrix.v1.Sentrix", "StreamEvents"));
