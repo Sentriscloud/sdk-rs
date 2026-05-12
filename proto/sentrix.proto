@@ -11,8 +11,7 @@ syntax = "proto3";
 // "sentrix.v2" with v1 retained for ≥ 2 minor releases overlap.
 //
 // Status: v0.1 skeleton. Handlers in crates/sentrix-grpc/src/lib.rs return
-// tonic::Status::unimplemented until main.rs integration lands. Reference
-// design doc: founder-private/audits/2026-05-05-grpc-service-proto-draft.md.
+// tonic::Status::unimplemented until main.rs integration lands.
 
 package sentrix.v1;
 
