@@ -52,9 +52,11 @@ impl SentrixWallet {
                 stripped.len()
             )));
         }
-        let bytes = ::hex::decode(stripped)?;
-        let secret =
-            SecretKey::from_slice(&bytes).map_err(|e| WalletError::InvalidKey(e.to_string()))?;
+        let bytes: [u8; 32] = ::hex::decode(stripped)?
+            .try_into()
+            .map_err(|_| WalletError::InvalidKey("decoded length != 32".into()))?;
+        let secret = SecretKey::from_byte_array(bytes)
+            .map_err(|e| WalletError::InvalidKey(e.to_string()))?;
         let secp = Secp256k1::new();
         let public = PublicKey::from_secret_key(&secp, &secret);
         let address = derive_address(&public);
@@ -122,10 +124,10 @@ impl SentrixWallet {
         let mut hasher = Sha256::new();
         hasher.update(&payload_json);
         let digest = hasher.finalize();
-        let msg = Message::from_digest_slice(&digest)
-            .map_err(|e| WalletError::InvalidKey(e.to_string()))?;
+        let digest_bytes: [u8; 32] = digest.into();
+        let msg = Message::from_digest(digest_bytes);
         let secp = Secp256k1::new();
-        let sig = secp.sign_ecdsa(&msg, &self.secret);
+        let sig = secp.sign_ecdsa(msg, &self.secret);
         let sig_bytes = sig.serialize_compact();
 
         Ok(SignedTransaction {
