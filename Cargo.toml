@@ -41,7 +41,7 @@ tiny-keccak = { version = "2", optional = true, features = ["keccak"] }
 hex = { version = "0.4", optional = true }
 
 # EVM (alloy)
-alloy = { version = "0.8", optional = true, features = ["providers", "rpc-types-eth", "transport-http", "reqwest-rustls-tls"] }
+alloy = { version = "2.0", optional = true, features = ["providers", "rpc-types-eth", "transport-http", "reqwest-rustls-tls"] }
 url = { version = "2", optional = true }
 
 # gRPC (tonic)
