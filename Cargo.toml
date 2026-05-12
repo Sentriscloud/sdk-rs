@@ -46,7 +46,7 @@ url = { version = "2", optional = true }
 
 # gRPC (tonic)
 tonic = { version = "0.12", optional = true, features = ["tls", "tls-roots"] }
-prost = { version = "0.13", optional = true }
+prost = { version = "0.14", optional = true }
 futures = { version = "0.3", optional = true }
 tokio-tungstenite = { version = "0.24", optional = true, features = ["rustls-tls-native-roots"] }
 
