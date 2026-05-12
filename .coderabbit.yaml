@@ -1,0 +1,27 @@
+language: en-US
+early_access: false
+reviews:
+  profile: assertive
+  high_level_summary: true
+  poem: false
+  review_status: false
+  changed_files_summary: false
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!**/target/**"
+    - "!**/dist/**"
+    - "!**/node_modules/**"
+    - "!**/*.lock"
+  path_instructions:
+    - path: "src/**"
+      instructions: |
+        Public SDK surface. Breaking-change watch on every PR:
+        - Adding required parameters to existing public functions / methods.
+        - Renaming exported types or removing public fields.
+        - Changing trait / interface signatures or default implementations.
+        - Bumping semver-affecting transitive dependencies.
+        Flag any breaking change with a clear MIGRATION note in the PR body + suggest semver-major bump.
+chat:
+  auto_reply: true
