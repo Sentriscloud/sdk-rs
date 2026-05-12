@@ -264,7 +264,7 @@ async fn run_driver(
                 cmd = tx_from_caller.recv() => {
                     match cmd {
                         Some(WriterCmd::Send(s)) => {
-                            if let Err(e) = sink.send(Message::Text(s)).await {
+                            if let Err(e) = sink.send(Message::Text(s.into())).await {
                                 tracing_warn(&format!("ws send error: {e}; reconnecting"));
                                 break;
                             }
@@ -283,7 +283,7 @@ async fn run_driver(
                         tracing_warn(&format!("ws stale > {STALE_TIMEOUT:?}; forcing reconnect"));
                         break;
                     }
-                    if let Err(e) = sink.send(Message::Ping(vec![])).await {
+                    if let Err(e) = sink.send(Message::Ping(Default::default())).await {
                         tracing_warn(&format!("ws ping failed: {e}; reconnecting"));
                         break;
                     }
