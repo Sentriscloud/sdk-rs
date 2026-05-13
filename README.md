@@ -16,7 +16,7 @@ Mirror of [`@sentrix/chain`](https://github.com/Sentriscloud/sdk-ts) on the Type
 | `native` | `native` (default) | ✅ alpha | Typed REST client over `reqwest` for `/chain/info`, `/staking/validators`, `/accounts/<addr>/nonce`, `POST /transactions`. |
 | `wallet` | `wallet` | ✅ alpha | secp256k1 keypair + Ethereum-style address derivation + native tx signing. |
 | `evm` | `evm` | ✅ alpha | alloy-based EVM JSON-RPC client (Provider factory; reach for alloy directly for signing / contract bindings / event filters). |
-| `grpc` | `grpc` | ✅ alpha | tonic client over `sentrix.v1.Sentrix` — getBlock / getBalance / getValidatorSet / getSupply / getMempool / streamEvents. Pre-generated proto types committed; no `protoc` needed by consumers. |
+| `grpc` | `grpc` | ✅ alpha | tonic client over `sentrix.v1.Sentrix` — getBlock / getBalance / getValidatorSet / getSupply / getMempool / streamEvents. Generated proto types come from the published [`sentrix-proto`](https://crates.io/crates/sentrix-proto) crate (single source of truth, shared with the chain server). Consumers building from source need `protoc` installed (`apt install protobuf-compiler` or equivalent). |
 | `bft` | `bft` | ✅ alpha | WebSocket subscription manager for the 9 channels (newHeads, logs, sentrix_finalized, sentrix_jail, …) over tokio-tungstenite. Multiplexes everything on one socket; pings every 30 s + force-reconnects on 90 s stale; auto re-subscribes after reconnect. Mirror of `@sentrix/chain/bft`. |
 
 Trim what you actually use:
@@ -146,17 +146,20 @@ println!("{}: {}", MAINNET.name, MAINNET.rpc_url);
 
 ## Status
 
-`v0.1.0-alpha.0` — network spec + native REST + wallet signing are usable today. EVM (alloy) and gRPC (tonic) modules are doors-only stubs; track [the roadmap](#roadmap) for landing dates.
+`v0.1.0-alpha.0` on crates.io. All six doors (`network`, `native`, `wallet`, `evm`, `grpc`, `bft`) compile and have working client paths against the public RPC + gRPC endpoints. Surface is alpha — expect breaking changes before 1.0 stabilises.
 
 ## Roadmap
+
+All six doors landed for v0.1.0-alpha.0:
 
 - [x] `network` — chain spec, mainnet + testnet constants
 - [x] `native` — REST read + tx broadcast
 - [x] `wallet` — secp256k1 keypair + tx signing
 - [x] `evm` — alloy-based provider (read; write via alloy direct)
-- [x] `grpc` — tonic client over `sentrix.v1.Sentrix` (`getBlock`, `getBalance`, `getValidatorSet`, `getSupply`, `getMempool`, `streamEvents`)
+- [x] `grpc` — tonic client over `sentrix.v1.Sentrix` (consumes [`sentrix-proto`](https://crates.io/crates/sentrix-proto) for the schema)
 - [x] `bft` — WebSocket subscription manager (multiplex + keepalive ping + auto-reconnect, port of `@sentrix/chain/bft`)
-- [x] Published to crates.io once feature surface stabilises
+
+Next: surface stabilisation toward 1.0 — naming review, error-type cleanup, optional `EvmClient` wrapper around alloy.
 
 ## Decimals
 
