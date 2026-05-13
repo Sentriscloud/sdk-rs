@@ -156,7 +156,7 @@ println!("{}: {}", MAINNET.name, MAINNET.rpc_url);
 - [x] `evm` — alloy-based provider (read; write via alloy direct)
 - [x] `grpc` — tonic client over `sentrix.v1.Sentrix` (`getBlock`, `getBalance`, `getValidatorSet`, `getSupply`, `getMempool`, `streamEvents`)
 - [x] `bft` — WebSocket subscription manager (multiplex + keepalive ping + auto-reconnect, port of `@sentrix/chain/bft`)
-- [ ] Published to crates.io once feature surface stabilises
+- [x] Published to crates.io once feature surface stabilises
 
 ## Decimals
 
