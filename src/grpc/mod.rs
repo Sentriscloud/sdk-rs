@@ -22,9 +22,15 @@
 //!   - `get_mempool(limit: u32)`
 //!   - `subscribe_events(filters: Vec<EventFilter>)` — server-stream
 
-#[allow(clippy::all)]
+/// Re-export of the upstream [`sentrix_proto`] crate so existing
+/// `sentrix_chain::grpc::pb::*` paths keep compiling without churn.
+/// The proto schema is the source-of-truth in `sentrix-labs/sentrix`
+/// and ships to crates.io as the standalone `sentrix-proto` crate;
+/// this module is a stable alias.
 #[allow(missing_docs)]
-pub mod pb;
+pub mod pb {
+    pub use sentrix_proto::*;
+}
 
 use crate::network::{get_spec, Network};
 use pb::sentrix_client::SentrixClient as InnerClient;
