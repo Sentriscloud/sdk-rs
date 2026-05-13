@@ -1,0 +1,26 @@
+name: cargo-deny
+
+# License + advisory + ban policy enforcement via deny.toml. Runs on PR
+# + push to main + manual dispatch. Mirrors the cargo-deny gate already
+# running on the chain repo (sentrix-labs/sentrix).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-deny:
+    name: cargo-deny (licenses + advisories + bans)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: EmbarkStudios/cargo-deny-action@6c8f9facfa5047ec02d8485b6bf52b587b7777d1 # v2
+        with:
+          command: check
+          arguments: --all-features

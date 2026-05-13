@@ -1,0 +1,30 @@
+name: Dependency review
+
+# Runs GitHub's dependency-review-action on PRs. Diffs the lockfile
+# changes vs the base branch and BLOCKS merge if newly-introduced
+# dependencies have HIGH-severity vulnerabilities OR licenses outside
+# our allowlist. Complements cargo-deny (full-tree post-merge gate)
+# with a pre-merge diff-only gate.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+
+      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4
+        with:
+          fail-on-severity: high
+          # Mirror deny.toml [licenses].allow.
+          allow-licenses: MIT, Apache-2.0, Apache-2.0 WITH LLVM-exception, BSD-2-Clause, BSD-3-Clause, ISC, MPL-2.0, Unicode-DFS-2016, Unicode-3.0, CC0-1.0, Zlib, 0BSD, BUSL-1.1, CDLA-Permissive-2.0
+          allow-dependencies-licenses: pkg:githubactions/Swatinem/rust-cache
+          comment-summary-in-pr: on-failure
