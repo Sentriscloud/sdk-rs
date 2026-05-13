@@ -48,7 +48,7 @@ url = { version = "2", optional = true }
 # crate which the chain repo also consumes server-side, so the schema
 # stays single-source-of-truth.
 tonic = { version = "0.14", optional = true, features = ["tls-ring", "tls-native-roots"] }
-sentrix-proto = { version = "0.1", optional = true }
+sentrix-proto = { version = "0.1.1", optional = true }
 futures = { version = "0.3", optional = true }
 tokio-tungstenite = { version = "0.29", optional = true, features = ["rustls-tls-native-roots"] }
 
