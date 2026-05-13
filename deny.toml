@@ -1,0 +1,42 @@
+# cargo-deny configuration. Loaded by .github/workflows/cargo-deny.yml.
+# See https://embarkstudios.github.io/cargo-deny/
+
+[graph]
+all-features = true
+
+[advisories]
+yanked = "deny"
+ignore = []
+
+[licenses]
+unused-allowed-license = "allow"
+confidence-threshold = 0.8
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "MPL-2.0",
+    "Unicode-DFS-2016",
+    "Unicode-3.0",
+    "CC0-1.0",
+    "Zlib",
+    "0BSD",
+    "BUSL-1.1",
+    # webpki-roots v1.x: CDLA-Permissive-2.0 (transitive via reqwest -> rustls).
+    "CDLA-Permissive-2.0",
+]
+
+[bans]
+# Multiple major versions tolerated for now; tighten later.
+multiple-versions = "warn"
+wildcards = "warn"
+allow-wildcard-paths = true
+highlight = "all"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-git = []
