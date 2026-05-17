@@ -7,6 +7,10 @@
 //! directly: typed response structs, single endpoint resolution,
 //! consistent error handling, and a place to attach retry / backoff
 //! when the chain LB returns 5xx during binary swaps.
+//!
+//! Native transfer amounts and fees are sentri (8-decimal SRX). The
+//! `/chain/info` supply fields exposed by [`ChainInfo`] are display SRX
+//! values because the REST endpoint returns them that way.
 
 use serde::{Deserialize, Serialize};
 
@@ -41,9 +45,9 @@ pub struct ChainInfo {
     pub height: u64,
     /// Total blocks ever produced (= height + 1 for a healthy chain).
     pub total_blocks: u64,
-    /// Total minted SRX denominated in sentri (10^-8 SRX).
+    /// Total minted SRX, as returned by `/chain/info`.
     pub total_minted_srx: f64,
-    /// Total burned SRX (50% of every fee).
+    /// Total burned SRX (50% of every fee), as returned by `/chain/info`.
     pub total_burned_srx: f64,
     /// Configured max supply (315 M post-tokenomics-v2 fork).
     pub max_supply_srx: f64,
@@ -51,7 +55,7 @@ pub struct ChainInfo {
     pub active_validators: u32,
     /// Pending tx count in the mempool.
     pub mempool_size: u64,
-    /// Reward paid for the next block.
+    /// Reward paid for the next block in SRX display units.
     pub next_block_reward_srx: f64,
 }
 

@@ -6,27 +6,58 @@
 
 Official Rust SDK for **Sentrix Chain** (chain ID `7119` mainnet, `7120` testnet).
 
-Mirror of [`@sentrix/chain`](https://github.com/Sentriscloud/sdk-ts) on the TypeScript side — same network spec, same canonical addresses, same tx signing semantics. Use this crate for Rust services (validators, indexers, bridges, monitoring agents) that need to talk to Sentrix without spinning up a Node process.
+Mirror of [`@sentrix/chain`](https://github.com/Sentriscloud/sdk-ts) on the TypeScript side: same network spec, same canonical addresses, same tx signing semantics. Use this crate for Rust services, indexers, bridges, and monitoring agents that need to talk to Sentrix without spinning up a Node process.
+
+The `0.1.x` line is alpha. APIs are intended for integration testing and early developer use, but may still change before 1.0.
 
 ## Surface
 
 | Module | Feature flag | Status | What it does |
 |---|---|---|---|
-| `network` | _always on_ | ✅ stable | Chain spec types + `MAINNET_SPEC` / `TESTNET_SPEC` constants. Single source of truth for chain ID, RPC / REST / WS / gRPC URLs, explorer, faucet. |
-| `native` | `native` (default) | ✅ alpha | Typed REST client over `reqwest` for `/chain/info`, `/staking/validators`, `/accounts/<addr>/nonce`, `POST /transactions`. |
-| `wallet` | `wallet` | ✅ alpha | secp256k1 keypair + Ethereum-style address derivation + native tx signing. |
-| `evm` | `evm` | ✅ alpha | alloy-based EVM JSON-RPC client (Provider factory; reach for alloy directly for signing / contract bindings / event filters). |
-| `grpc` | `grpc` | ✅ alpha | tonic client over `sentrix.v1.Sentrix` — getBlock / getBalance / getValidatorSet / getSupply / getMempool / streamEvents. Generated proto types come from the published [`sentrix-proto`](https://crates.io/crates/sentrix-proto) crate (single source of truth, shared with the chain server). Consumers building from source need `protoc` installed (`apt install protobuf-compiler` or equivalent). |
-| `bft` | `bft` | ✅ alpha | WebSocket subscription manager for the 9 channels (newHeads, logs, sentrix_finalized, sentrix_jail, …) over tokio-tungstenite. Multiplexes everything on one socket; pings every 30 s + force-reconnects on 90 s stale; auto re-subscribes after reconnect. Mirror of `@sentrix/chain/bft`. |
+| `network` | _always on_ | alpha, low churn | Chain spec types + `MAINNET_SPEC` / `TESTNET_SPEC` constants. Single source of truth for chain ID, RPC / REST / WS / gRPC URLs, explorer, faucet. |
+| `native` | `native` (default) | alpha | Typed REST client over `reqwest` for `/chain/info`, `/staking/validators`, `/accounts/<addr>/nonce`, `POST /transactions`. |
+| `wallet` | `wallet` | alpha | secp256k1 keypair + Ethereum-style address derivation + native tx signing. Applications remain responsible for secret storage. |
+| `evm` | `evm` | alpha | alloy-based EVM HTTP provider factory using Sentrix mainnet/testnet RPC config. Reach for alloy directly for signing / contract bindings / event filters. |
+| `grpc` | `grpc` | alpha | tonic client over `sentrix.v1.Sentrix` — getBlock / getBalance / getValidatorSet / getSupply / getMempool / streamEvents. Proto types come from the published [`sentrix-proto`](https://crates.io/crates/sentrix-proto) crate. Consumers building from source may need `protoc` installed (`apt install protobuf-compiler` or equivalent). |
+| `bft` | `bft` | alpha | WebSocket subscription manager for EVM and Sentrix-specific subscription channels over tokio-tungstenite. Runtime behavior depends on the configured WS endpoint. |
 
 Trim what you actually use:
 
 ```toml
 [dependencies]
-sentrix-chain = { version = "0.1.0-alpha.0", default-features = false, features = ["native", "wallet"] }
+sentrix-chain = { version = "0.1.0-alpha.1", default-features = false, features = ["native", "wallet"] }
 ```
 
 ## Quick start
+
+## Unit warning
+
+Native REST/native ledger amounts use **sentri**, the 8-decimal SRX
+unit: `1 SRX = 100_000_000 sentri`.
+
+EVM JSON-RPC uses **wei-style 18-decimal units** for Ethereum tooling
+compatibility. Do not mix native and EVM amounts directly; convert
+explicitly at API boundaries.
+
+## Examples
+
+Run examples against mainnet by default, or set `SENTRIX_NETWORK=testnet`.
+
+```bash
+cargo run --example chain_info
+cargo run --no-default-features --features evm --example evm_block_number
+cargo run --no-default-features --features grpc --example grpc_latest_block
+cargo run --no-default-features --features bft --example websocket_subscribe
+cargo run --no-default-features --features wallet --example sign_native_transfer
+```
+
+`sign_native_transfer` reads secrets from the environment and only
+prints the signed transaction envelope; it does not broadcast.
+
+A native balance example is not included in this alpha because
+`NativeClient` does not yet expose a documented native balance endpoint.
+Use the `grpc` surface for balance reads when that endpoint is available
+for your deployment.
 
 ### Read chain stats
 
@@ -34,7 +65,7 @@ sentrix-chain = { version = "0.1.0-alpha.0", default-features = false, features 
 use sentrix_chain::{Network, NativeClient};
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = NativeClient::new(Network::Mainnet);
     let info = client.chain_info().await?;
     println!(
@@ -55,7 +86,7 @@ async fn main() -> anyhow::Result<()> {
 use sentrix_chain::{Network, NativeClient, SentrixWallet};
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let w = SentrixWallet::from_private_key_hex(&std::env::var("PRIVATE_KEY")?)?;
     let client = NativeClient::new(Network::Mainnet);
 
@@ -146,11 +177,11 @@ println!("{}: {}", MAINNET.name, MAINNET.rpc_url);
 
 ## Status
 
-`v0.1.0-alpha.0` on crates.io. All six doors (`network`, `native`, `wallet`, `evm`, `grpc`, `bft`) compile and have working client paths against the public RPC + gRPC endpoints. Surface is alpha — expect breaking changes before 1.0 stabilises.
+`v0.1.0-alpha.1` is the release candidate prepared for feature-flag hardening, examples, docs, and publish readiness. All six surfaces (`network`, `native`, `wallet`, `evm`, `grpc`, `bft`) are intended to compile behind their feature flags. Live endpoint compatibility is still alpha, so expect breaking changes before 1.0 stabilises.
 
 ## Roadmap
 
-All six doors landed for v0.1.0-alpha.0:
+All six surfaces are present in v0.1.0-alpha.1:
 
 - [x] `network` — chain spec, mainnet + testnet constants
 - [x] `native` — REST read + tx broadcast
@@ -159,11 +190,7 @@ All six doors landed for v0.1.0-alpha.0:
 - [x] `grpc` — tonic client over `sentrix.v1.Sentrix` (consumes [`sentrix-proto`](https://crates.io/crates/sentrix-proto) for the schema)
 - [x] `bft` — WebSocket subscription manager (multiplex + keepalive ping + auto-reconnect, port of `@sentrix/chain/bft`)
 
-Next: surface stabilisation toward 1.0 — naming review, error-type cleanup, optional `EvmClient` wrapper around alloy.
-
-## Decimals
-
-Sentrix's underlying ledger is **8-decimal** native (1 SRX = 100,000,000 sentri). The EVM tooling sees an **18-decimal** view because `eth_getBalance` returns wei-scaled values for compatibility with MetaMask / ethers / viem. When you use `NativeClient::balance(...)` you get sentri (8-decimal); when the planned `EvmClient` ships you'll get wei (18-decimal). Don't mix the units across surfaces.
+Next: surface stabilisation toward 1.0 — naming review, error-type cleanup, native balance support if the REST endpoint is documented, and optional `EvmClient` wrappers around alloy.
 
 ## License
 

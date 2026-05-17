@@ -9,10 +9,9 @@
 //! - [`pb`] — the raw prost types + tonic stub if you need richer
 //!   request shapes (custom `at_height`, multi-filter streams, …).
 //!
-//! The proto types are pre-generated + committed (`pb.rs` is checked
-//! in) so consumers don't need `protoc` installed. Regenerate via
-//! `cargo run --bin gen-grpc` if the upstream chain bumps the proto
-//! (planned tooling — not shipped in alpha.0).
+//! Proto types come from the published `sentrix-proto` crate. Building
+//! with the `grpc` feature may require `protoc` through that dependency
+//! (`apt install protobuf-compiler` or equivalent).
 //!
 //! Available calls (chain v0.4+):
 //!   - `get_latest_block()` / `get_block_by_height(h)`
@@ -177,8 +176,8 @@ impl SentrixGrpcClient {
 /// Convenience — short-form hex of a 32-byte hash for UI rendering.
 pub fn hash_short(h: &pb::Hash) -> String {
     if h.value.len() != 32 {
-        return "—".into();
+        return "-".into();
     }
     let hex_str = ::hex::encode(&h.value);
-    format!("{}…{}", &hex_str[..6], &hex_str[hex_str.len() - 4..])
+    format!("{}...{}", &hex_str[..6], &hex_str[hex_str.len() - 4..])
 }
