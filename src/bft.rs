@@ -15,8 +15,9 @@
 //! transparently re-subscribes after reconnect with exponential
 //! backoff (1 s → 2 s → … → 30 s capped).
 //!
-//! Each [`subscribe`] call returns a `tokio::sync::mpsc::UnboundedReceiver`
-//! that yields `serde_json::Value` payloads. Drain it with the standard
+//! Each [`SubscriptionManager::subscribe`] call returns a
+//! `tokio::sync::mpsc::UnboundedReceiver` that yields
+//! `serde_json::Value` payloads. Drain it with the standard
 //! `.recv().await` loop.
 
 use std::collections::HashMap;
@@ -165,7 +166,7 @@ impl SubscriptionManager {
 
     /// Subscribe to `logs` with a filter object. The filter is passed
     /// verbatim as the second param in the `eth_subscribe` request —
-    /// see https://eth.wiki/json-rpc/API for the address/topics
+    /// see <https://eth.wiki/json-rpc/API> for the address/topics
     /// shape.
     pub async fn subscribe_with_filter(
         &self,

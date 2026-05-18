@@ -1,20 +1,29 @@
 //! Official Rust SDK for Sentrix Chain.
 //!
-//! Surface (mirrors `@sentrix/chain` on the TypeScript side):
+//! Alpha surface (mirrors `@sentrix/chain` on the TypeScript side):
 //!
 //! - [`network`] — chain spec types + mainnet/testnet constants. Always
 //!   compiled in; zero runtime deps.
-//! - [`native`] — typed REST client for the Sentrix-shaped endpoints
-//!   (`/chain/info`, `/staking/validators`, `/epoch/current`, …). Behind
-//!   the `native` feature (default). Uses `reqwest` + `tokio`.
-//! - [`wallet`] — secp256k1 keypair + Ethereum-style address derivation
-//!   + Sentrix-native tx signing. Behind the `wallet` feature.
-//! - `evm` (planned) — alloy-based EVM client.
-//! - `grpc` (planned) — tonic client over the chain's `sentrix.v1.Sentrix`
-//!   service.
+//! - [`native`] — alpha typed REST client for `/chain/info`,
+//!   `/staking/validators`, `/accounts/<addr>/nonce`, and
+//!   `POST /transactions`. Behind the `native` feature (default).
+//! - [`wallet`] — alpha secp256k1 keypair, Ethereum-style address
+//!   derivation, and Sentrix-native transfer signing. Behind `wallet`.
+//! - [`evm`] — alpha Alloy HTTP provider factory for Sentrix EVM RPC.
+//!   Behind `evm`.
+//! - [`grpc`] — alpha tonic client over the chain's `sentrix.v1.Sentrix`
+//!   service via the `sentrix-proto` crate. Behind `grpc`.
+//! - [`bft`] — alpha WebSocket subscription manager for Sentrix/EVM
+//!   subscription channels. Behind `bft`.
 //!
-//! Status: `0.1.0-alpha.0`. Network spec + native REST are usable;
-//! wallet signing scaffolded; EVM and gRPC are doors-only stubs.
+//! Status: `0.1.0-alpha.1`. APIs compile and are intended for external
+//! integration testing, but the crate is not a 1.0-stable production
+//! interface yet.
+//!
+//! Unit warning: native REST/native ledger amounts use `sentri`
+//! (8-decimal SRX). EVM JSON-RPC uses wei-style 18-decimal units for
+//! Ethereum tooling compatibility. Do not mix native and EVM amounts
+//! without explicit conversion.
 
 #![deny(unsafe_code)]
 #![warn(missing_docs)]

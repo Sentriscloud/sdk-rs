@@ -1,0 +1,79 @@
+name: Rust
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install protobuf compiler
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+
+      - name: cargo fmt
+        run: cargo fmt --check
+
+      - name: cargo clippy
+        run: cargo clippy --all-features -- -D warnings
+
+      - name: cargo check default
+        run: cargo check
+
+      - name: cargo check no default features
+        run: cargo check --no-default-features
+
+      - name: cargo check native
+        run: cargo check --no-default-features --features native
+
+      - name: cargo check wallet
+        run: cargo check --no-default-features --features wallet
+
+      - name: cargo check evm
+        run: cargo check --no-default-features --features evm
+
+      - name: cargo check grpc
+        run: cargo check --no-default-features --features grpc
+
+      - name: cargo check bft
+        run: cargo check --no-default-features --features bft
+
+      - name: cargo check native,wallet
+        run: cargo check --no-default-features --features native,wallet
+
+      - name: cargo check evm,grpc
+        run: cargo check --no-default-features --features evm,grpc
+
+      - name: cargo check all features
+        run: cargo check --all-features
+
+      - name: cargo check examples all features
+        run: cargo check --examples --all-features
+
+      - name: cargo test wallet
+        run: cargo test --no-default-features --features wallet
+
+      - name: cargo test evm
+        run: cargo test --no-default-features --features evm
+
+      - name: cargo test all features
+        run: cargo test --all-features
+
+      - name: cargo doc all features
+        run: cargo doc --all-features --no-deps
