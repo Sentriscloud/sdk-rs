@@ -21,6 +21,9 @@ jobs:
         with:
           components: rustfmt, clippy
 
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+
       - name: Install protobuf compiler
         run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
@@ -51,8 +54,23 @@ jobs:
       - name: cargo check bft
         run: cargo check --no-default-features --features bft
 
+      - name: cargo check native,wallet
+        run: cargo check --no-default-features --features native,wallet
+
+      - name: cargo check evm,grpc
+        run: cargo check --no-default-features --features evm,grpc
+
       - name: cargo check all features
         run: cargo check --all-features
+
+      - name: cargo check examples all features
+        run: cargo check --examples --all-features
+
+      - name: cargo test wallet
+        run: cargo test --no-default-features --features wallet
+
+      - name: cargo test evm
+        run: cargo test --no-default-features --features evm
 
       - name: cargo test all features
         run: cargo test --all-features
